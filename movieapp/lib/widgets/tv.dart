@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:movieapp/utils/text.dart';
+import 'package:movieapp/description.dart';
 
 class TvWidget extends StatefulWidget {
   final List? tvShows;
@@ -39,7 +39,7 @@ class _TvWidgetState extends State<TvWidget> {
                   );
                 },
               ),
-              SizedBox(width: 8), // Add a SizedBox for spacing
+              SizedBox(width: 8),
               Expanded(
                 child: Text(
                   "Top TV Shows",
@@ -49,7 +49,7 @@ class _TvWidgetState extends State<TvWidget> {
                   ),
                 ),
               ),
-              SizedBox(width: 8), // Add a SizedBox for spacing
+              SizedBox(width: 8),
               IconButton(
                 icon: Icon(Icons.arrow_forward),
                 onPressed: () {
@@ -70,40 +70,55 @@ class _TvWidgetState extends State<TvWidget> {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final tvShow = widget.tvShows![index];
+                if (tvShow['original_name'] == null) {
+                  return SizedBox.shrink();
+                }
                 return InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Description(
+                          name: tvShow['original_name'] ?? 'Loading',
+                          description:
+                              tvShow['overview'] ?? 'No description available',
+                          bannerurl: 'https://image.tmdb.org/t/p/w500' +
+                              (tvShow['backdrop_path'] ?? ''),
+                          posterurl: 'https://image.tmdb.org/t/p/w500' +
+                              (tvShow['poster_path'] ?? ''),
+                          vote: tvShow['vote_average']?.toString() ?? 'N/A',
+                          launch_on: tvShow['first_air_date'] ?? 'N/A',
+                        ),
+                      ),
+                    );
+                  },
                   child: Container(
                     width: 140,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 8), // Add padding for better spacing
+                    padding: EdgeInsets.symmetric(horizontal: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          height:
-                              200, // Adjust the height of the image container
+                          height: 200,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                                10), // Add border radius for image container
+                            borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
                               image: NetworkImage(
                                 'https://image.tmdb.org/t/p/w500' +
                                     (tvShow['poster_path'] ?? ''),
                               ),
-                              fit: BoxFit.cover, // Adjust the fit of the image
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                        SizedBox(height: 8), // Add space between image and text
-                        Container(
-                          child: Text(
-                            tvShow['original_name'] ?? 'Loading',
-                            maxLines: 2, // Limit the number of lines for text
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.lusitana(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
+                        SizedBox(height: 8),
+                        Text(
+                          tvShow['original_name'] ?? 'Loading',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.lusitana(
+                            fontSize: 16,
+                            color: Colors.white,
                           ),
                         ),
                       ],

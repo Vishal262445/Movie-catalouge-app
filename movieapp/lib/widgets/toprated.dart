@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movieapp/description.dart';
 import 'package:movieapp/utils/text.dart';
 
 class TopRated extends StatefulWidget {
@@ -35,7 +36,7 @@ class _TopRatedState extends State<TopRated> {
                   _controller.animateTo(
                     _controller.offset - MediaQuery.of(context).size.width,
                     curve: Curves.easeOut,
-                    duration: Duration(milliseconds: 300),
+                    duration: Duration(milliseconds: 1000),
                   );
                 },
               ),
@@ -56,7 +57,7 @@ class _TopRatedState extends State<TopRated> {
                   _controller.animateTo(
                     _controller.offset + MediaQuery.of(context).size.width,
                     curve: Curves.easeOut,
-                    duration: Duration(milliseconds: 300),
+                    duration: Duration(milliseconds: 1000),
                   );
                 },
               ),
@@ -70,8 +71,29 @@ class _TopRatedState extends State<TopRated> {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final movie = widget.topRated![index];
+                if (movie['title'] == null) {
+                  return SizedBox
+                      .shrink(); // Return an empty SizedBox if the title is null
+                }
                 return InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Description(
+                          name: movie['title'] ?? 'Loading',
+                          description:
+                              movie['overview'] ?? 'No description available',
+                          bannerurl: 'https://image.tmdb.org/t/p/w500' +
+                              (movie['backdrop_path'] ?? ''),
+                          posterurl: 'https://image.tmdb.org/t/p/w500' +
+                              (movie['poster_path'] ?? ''),
+                          vote: movie['vote_average']?.toString() ?? 'N/A',
+                          launch_on: movie['release_date'] ?? 'N/A',
+                        ),
+                      ),
+                    );
+                  },
                   child: Container(
                     width: 140,
                     child: Column(
@@ -79,6 +101,7 @@ class _TopRatedState extends State<TopRated> {
                         Container(
                           height: 135,
                           decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
                             image: DecorationImage(
                               image: NetworkImage(
                                 'https://image.tmdb.org/t/p/w500' +

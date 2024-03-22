@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:movieapp/description.dart';
 import 'package:movieapp/utils/text.dart';
 
 class TrendingMovies extends StatefulWidget {
@@ -35,7 +36,7 @@ class _TrendingMoviesState extends State<TrendingMovies> {
                   _controller.animateTo(
                     _controller.offset - MediaQuery.of(context).size.width,
                     curve: Curves.easeOut,
-                    duration: Duration(milliseconds: 300),
+                    duration: Duration(milliseconds: 1000),
                   );
                 },
               ),
@@ -43,14 +44,11 @@ class _TrendingMoviesState extends State<TrendingMovies> {
               Expanded(
                 child: Text(
                   "Trending Movies",
-                  
                   style: GoogleFonts.lusitana(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                  
                 ),
-                
               ),
               SizedBox(width: 8), // Add a SizedBox for spacing
               IconButton(
@@ -73,8 +71,29 @@ class _TrendingMoviesState extends State<TrendingMovies> {
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
                 final movie = widget.trending![index];
+                if (movie['title'] == null) {
+                  return SizedBox
+                      .shrink(); // Return an empty SizedBox if the title is null
+                }
                 return InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Description(
+                          name: widget.trending![index]['title'],
+                          description: widget.trending![index]['overview'],
+                          bannerurl: 'https://image.tmdb.org/t/p/w500' +
+                              widget.trending![index]['backdrop_path'],
+                          posterurl: 'https://image.tmdb.org/t/p/w500' +
+                              widget.trending![index]['poster_path'],
+                          vote: widget.trending![index]['vote_average']
+                              .toString(),
+                          launch_on: widget.trending![index]['release_date'],
+                        ),
+                      ),
+                    );
+                  },
                   child: Container(
                     width: 140,
                     child: Column(
@@ -82,6 +101,7 @@ class _TrendingMoviesState extends State<TrendingMovies> {
                         Container(
                           height: 135,
                           decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
                             image: DecorationImage(
                               image: NetworkImage(
                                 'https://image.tmdb.org/t/p/w500' +
@@ -97,6 +117,7 @@ class _TrendingMoviesState extends State<TrendingMovies> {
                             size: 16, // You can specify the size
                           ),
                         ),
+                        Container(),
                       ],
                     ),
                   ),
